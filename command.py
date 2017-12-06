@@ -31,14 +31,12 @@ class Command(object):
 
     def leaderboard(self):
         data = []
-        with open('score.csv','r') as input_file:
+        with open('user.csv','r') as input_file:
             reader = csv.reader(input_file)
             reader.next() # skip header
+            a_list = [el[1:] for el in map(tuple, reader)] # exclude first row
 
-            for line in reader:
-                data.append(tuple(line))
-
-        data = sorted(data, key=lambda tup: int(tup[1]), reverse=True)[:10]
+        data = sorted(a_list, key=lambda tup: int(tup[1]), reverse=True)[:10]
 
         with open('top10.csv','w') as output_file:
             csv.writer(output_file).writerows(data)
@@ -48,3 +46,16 @@ class Command(object):
         f.close()
 
         return "Top 10 Leaderboard:\n" + message
+
+    def dm_karma(self, user, command):
+        data = []
+        with open('user.csv','r') as input_file:
+            reader = csv.reader(input_file)
+            reader.next() # skip header
+            a_list = [el for el in map(tuple, reader)]
+
+        data = sorted(a_list, key=lambda tup: int(tup[2]), reverse=True)
+        item = [item for item in data if item[0] == user]
+        karma = item[0][2]
+
+        return karma

@@ -1,4 +1,5 @@
 import command
+import csv
 
 class Event:
     def __init__(self, bot):
@@ -10,7 +11,7 @@ class Event:
 
         if events and len(events) > 0:
             for event in events:
-                # print event.get("channel")
+                # print event
                 self.parse_event(event)
 
     def parse_event(self, event):
@@ -19,14 +20,11 @@ class Event:
 
     def handle_event(self, user, command, channel):
         if command and channel:
-            print "Received command: " + command + " in channel: " + channel + " from user: " + user
-            response = self.command.handle_command(user, command)
-            self.bot.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
-
-    def reply_message(self, user, command, channel):
-        print command
-        print channel
-        # if command and channel:
-        #     print "Received command: " + command + " in channel: " + channel + " from user: " + user
-        #     response = "heyho"
-        #     self.bot.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+            if channel.startswith('D'): # if direct message
+                print "Received command: " + command + " in channel: " + channel + " from user: " + user
+                response = self.command.dm_karma(user, command)
+                self.bot.slack_client.api_call("chat.postMessage", as_user="true", channel=channel, text='Your karma is equal to ' + response)
+            else:
+                print "Received command: " + command + " in channel: " + channel + " from user: " + user
+                response = self.command.handle_command(user, command)
+                self.bot.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
