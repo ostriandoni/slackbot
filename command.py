@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 
 class Command(object):
     def __init__(self):
@@ -29,17 +30,25 @@ class Command(object):
 
         return response
 
-    def leaderboard(self):
+    def get_user_data(self, exclude_first_col):
         data = []
         with open('user.csv','r') as input_file:
             reader = csv.reader(input_file)
             reader.next() # skip header
-            a_list = [el[1:] for el in map(tuple, reader)] # exclude first row
 
-        data = sorted(a_list, key=lambda tup: int(tup[1]), reverse=True)[:10]
+            if exclude_first_col:
+                user_data = [el[1:] for el in map(tuple, reader)]
+            else:
+                user_data = [el for el in map(tuple, reader)]
 
+        if exclude_first_col:
+            return sorted(user_data, key=lambda tup: int(tup[1]), reverse=True)[:10] # get top 10 karma points
+        else:
+            return sorted(user_data, key=lambda tup: int(tup[2]), reverse=True)
+
+    def leaderboard(self):
         with open('top10.csv','w') as output_file:
-            csv.writer(output_file).writerows(data)
+            csv.writer(output_file).writerows(self.get_user_data(True)) # create view of top 10 karma points
 
         f = open('top10.csv','r')
         message = f.read()
@@ -47,15 +56,24 @@ class Command(object):
 
         return "Top 10 Leaderboard:\n" + message
 
-    def dm_karma(self, user, command):
-        data = []
-        with open('user.csv','r') as input_file:
-            reader = csv.reader(input_file)
-            reader.next() # skip header
-            a_list = [el for el in map(tuple, reader)]
+    def get_karma_by_user_id(self, user):
+        item = [item for item in self.get_user_data(False) if item[0] == user]
 
-        data = sorted(a_list, key=lambda tup: int(tup[2]), reverse=True)
-        item = [item for item in data if item[0] == user]
-        karma = item[0][2]
+        if item:
+            return item[0][2]
+        else:
+            return "There is no user with ID " + user
 
-        return karma
+    def get_user_name_by_user_id(self, user):
+        item = [item for item in self.get_user_data(False) if item[0] == user]
+
+        if item:
+            return item[0][1]
+        else:
+            return "There is no user with ID " + user
+
+    def update_karma(self, user, karma):
+        df = pd.read_csv("user.csv")
+        df.loc[df["uid"] == user, "score"] = karma
+        df.to_csv("user.csv", index=False)
+
