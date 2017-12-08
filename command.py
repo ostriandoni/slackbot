@@ -30,9 +30,11 @@ class Command(object):
 
         return response
 
-    def get_user_data(self, exclude_first_col):
+    def get_user_data(self, exclude_first_col, filename):
+        col = 2 if 'user' in filename else 1 # column checking for different file
         data = []
-        with open('user.csv','r') as input_file:
+
+        with open(filename,'r') as input_file:
             reader = csv.reader(input_file)
             reader.next() # skip header
 
@@ -44,11 +46,11 @@ class Command(object):
         if exclude_first_col:
             return sorted(user_data, key=lambda tup: int(tup[1]), reverse=True)[:10] # get top 10 karma points
         else:
-            return sorted(user_data, key=lambda tup: int(tup[2]), reverse=True)
+            return sorted(user_data, key=lambda tup: int(tup[col]), reverse=True)
 
     def leaderboard(self):
         with open('top10.csv','w') as output_file:
-            csv.writer(output_file).writerows(self.get_user_data(True)) # create view of top 10 karma points
+            csv.writer(output_file).writerows(self.get_user_data(True, 'user.csv')) # create view of top 10 karma points
 
         f = open('top10.csv','r')
         message = f.read()
@@ -57,23 +59,43 @@ class Command(object):
         return "Top 10 Leaderboard:\n" + message
 
     def get_karma_by_user_id(self, user):
-        item = [item for item in self.get_user_data(False) if item[0] == user]
+        item = [item for item in self.get_user_data(False, 'user.csv') if item[0] == user]
 
         if item:
             return item[0][2]
         else:
-            return "There is no user with ID " + user
+            print "There is no user with ID " + user
 
     def get_user_name_by_user_id(self, user):
-        item = [item for item in self.get_user_data(False) if item[0] == user]
+        item = [item for item in self.get_user_data(False, 'user.csv') if item[0] == user]
 
         if item:
             return item[0][1]
         else:
-            return "There is no user with ID " + user
+            print "There is no user with ID " + user
 
-    def update_karma(self, user, karma):
-        df = pd.read_csv("user.csv")
-        df.loc[df["uid"] == user, "score"] = karma
-        df.to_csv("user.csv", index=False)
+    def update_karma_points(self, user, karma):
+        df = pd.read_csv('user.csv')
+        df.loc[df['uid'] == user, 'score'] = karma
+        df.to_csv('user.csv', index=False)
+        print 'Success update karma points'
 
+    def is_available(self, user):
+        if int(self.get_karma_remaining(user)) > 0:
+            print 'Karma is still available'
+            return True
+        else:
+            print 'There is nothing left karma to give'
+            return False
+
+    def get_karma_remaining(self, user):
+        df = pd.read_csv('sending_karma.csv')
+        karma = df.loc[df['uid'] == user, 'remaining']
+
+        return karma[0]
+
+    def update_karma_remaining(self, user):
+        df = pd.read_csv('sending_karma.csv')
+        df.loc[df['uid'] == user, 'remaining'] = int(self.get_karma_remaining(user)) - 1
+        df.to_csv('sending_karma.csv', index=False)
+        print 'Success update karma remaining'

@@ -20,10 +20,16 @@ class Event:
                     if 'thanks <@' in text.lower() and link not in text: #if say thanks and mention some user
                         mentioned_user = text.split('@', 1)[-1].replace('>', '')
                         from_user = event['user']
-                        points = int(self.command.get_karma_by_user_id(mentioned_user)) + 1
-                        status = self.command.update_karma(mentioned_user, points)
-                        # add remaining karma method here
-                        reply = self.command.get_user_name_by_user_id(mentioned_user) + ' receives 1 point from ' + self.command.get_user_name_by_user_id(from_user) + '. He now has ' + str(points) + ' points.'
+                        status = self.command.is_available(from_user)
+
+                        if status:
+                            points = int(self.command.get_karma_by_user_id(mentioned_user)) + 1
+                            self.command.update_karma_points(mentioned_user, points)
+                            self.command.update_karma_remaining(from_user)
+                            reply = self.command.get_user_name_by_user_id(mentioned_user) + ' receives 1 point from ' + self.command.get_user_name_by_user_id(from_user) + '. He now has ' + str(points) + ' points.'
+                        else:
+                            reply = 'Sorry, there is nothing left karma to give'
+
                         self.bot.slack_client.api_call('chat.postMessage', channel=channel, text=reply, as_user=True)
                     else:
                         self.parse_event(event)
