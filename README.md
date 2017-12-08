@@ -6,11 +6,11 @@ A chat bot for [Slack](https://slack.com) inspired by [this article](https://cod
 - **[python](https://www.python.org/downloads/)**, specifically version 2.7
 - **[pip](https://pip.pypa.io/en/stable/installing/)**, the Python package manager
 for installing packages we need.
-- **[virtualenv](https://virtualenv.pypa.io/en/latest/installation/)** or another
-tool to manage a virtual environment
-- **[python-slackclient](http://python-slackclient.readthedocs.io/en/latest/)** a
-Slack client for Python. :snake:
-- **[pandas](https://pandas.pydata.org/getpandas.html)** a library providing
+- **[virtualenv](https://virtualenv.pypa.io/en/latest/installation/)**, to manage
+a virtual environment.
+- **[python-slackclient](http://python-slackclient.readthedocs.io/en/latest/)**, a
+Slack client for Python.
+- **[pandas](https://pandas.pydata.org/getpandas.html)**, a library providing
 high-performance, easy-to-use data structures and data analysis tools for Python.
 
 
