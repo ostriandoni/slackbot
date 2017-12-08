@@ -58,11 +58,13 @@ class Command(object):
 
         return "Top 10 Leaderboard:\n" + message
 
-    def get_karma_by_user_id(self, user):
-        item = [item for item in self.get_user_data(False, 'user.csv') if item[0] == user]
+    def get_karma_by_user_id(self, user, is_dm):
+        filename = 'sending_karma.csv' if is_dm else 'user.csv'
+        col = 2 if 'user' in filename else 1
+        item = [item for item in self.get_user_data(False, filename) if item[0] == user]
 
         if item:
-            return item[0][2]
+            return item[0][col]
         else:
             print "There is no user with ID " + user
 
@@ -89,10 +91,12 @@ class Command(object):
             return False
 
     def get_karma_remaining(self, user):
-        df = pd.read_csv('sending_karma.csv')
-        karma = df.loc[df['uid'] == user, 'remaining']
+        item = [item for item in self.get_user_data(False, 'sending_karma.csv') if item[0] == user]
 
-        return karma[0]
+        if item:
+            return item[0][1]
+        else:
+            print "There is no user with ID " + user
 
     def update_karma_remaining(self, user):
         df = pd.read_csv('sending_karma.csv')
