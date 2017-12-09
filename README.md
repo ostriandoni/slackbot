@@ -12,6 +12,7 @@ a virtual environment.
 Slack client for Python.
 - **[pandas](https://pandas.pydata.org/getpandas.html)**, a library providing
 high-performance, easy-to-use data structures and data analysis tools for Python.
+- **[flask](http://flask.pocoo.org/)**, a web development micro framework for Python.
 
 
 ## Setup Environment
