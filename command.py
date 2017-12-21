@@ -66,7 +66,7 @@ class Command(object):
         if item:
             return item[0][col]
         else:
-            print "There is no user with ID " + user
+            print ("There is no user with ID " + user)
 
     def get_user_name_by_user_id(self, user):
         item = [item for item in self.get_user_data(False, 'user.csv') if item[0] == user]
@@ -74,20 +74,20 @@ class Command(object):
         if item:
             return item[0][1]
         else:
-            print "There is no user with ID " + user
+            print ("There is no user with ID " + user)
 
     def update_karma_points(self, user, karma):
         df = pd.read_csv('user.csv')
         df.loc[df['uid'] == user, 'score'] = karma
         df.to_csv('user.csv', index=False)
-        print 'Success update karma points'
+        print ('Success update karma points')
 
     def is_available(self, user):
         if int(self.get_karma_remaining(user)) > 0:
-            print 'Karma is still available'
+            print ('Karma is still available')
             return True
         else:
-            print 'There is nothing left karma to give'
+            print ('There is nothing left karma to give')
             return False
 
     def get_karma_remaining(self, user):
@@ -96,10 +96,10 @@ class Command(object):
         if item:
             return item[0][1]
         else:
-            print "There is no user with ID " + user
+            print ("There is no user with ID " + user)
 
     def update_karma_remaining(self, user):
         df = pd.read_csv('sending_karma.csv')
         df.loc[df['uid'] == user, 'remaining'] = int(self.get_karma_remaining(user)) - 1
         df.to_csv('sending_karma.csv', index=False)
-        print 'Success update karma remaining'
+        print ('Success update karma remaining')

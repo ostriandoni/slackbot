@@ -11,7 +11,7 @@ class Event:
 
         if events and len(events) > 0:
             for event in events:
-                print event
+                print (event)
 
                 if ('channel' in event and 'text' in event and event.get('type') == 'message'):
                     channel = event['channel']
@@ -21,6 +21,7 @@ class Event:
 
                     if 'thanks <@' in text.lower() and link not in text: # if say thanks and mention some user
                         mentioned_user = text.split('@', 1)[-1].replace('>', '')
+                        mentioned_user = mentioned_user[0:9]
                         status = self.command.is_available(from_user)
 
                         if status:
@@ -33,7 +34,7 @@ class Event:
 
                         self.bot.slack_client.api_call('chat.postMessage', channel=channel, text=reply, as_user=True)
                     elif 'karma' in text.lower() and channel.startswith('D') and 'bot_id' not in event: # if say karma in direct message
-                        print "Received message: " + text + " in channel: " + channel + " from user: " + from_user
+                        print ("Received message: " + text + " in channel: " + channel + " from user: " + from_user)
                         response = self.command.get_karma_by_user_id(from_user, True)
                         self.bot.slack_client.api_call("chat.postMessage", channel=channel, text='Your karma is equal to ' + response, as_user=True)
                     else:
@@ -45,6 +46,6 @@ class Event:
 
     def handle_event(self, user, command, channel):
         if command and channel:
-            print "Received command: " + command + " in channel: " + channel + " from user: " + user
+            print ("Received command: " + command + " in channel: " + channel + " from user: " + user)
             response = self.command.handle_command(user, command)
             self.bot.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
